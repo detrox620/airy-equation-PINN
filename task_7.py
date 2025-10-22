@@ -36,7 +36,7 @@ class PINN(nn.Module):
         return x
 
 
-layers = [1, 16, 32, 1]
+layers = [1, 120, 120, 120, 120, 1]
 a = -10.0
 b = 10.0
 N_f = 1000
@@ -69,14 +69,14 @@ def loss_function(model, x_f, x_i):
     loss_y0 = torch.mean((torch.squeeze(y_i) - y_0) ** 2)
     loss_y_x_0 = torch.mean((torch.squeeze(y_i_x) - y_x_0) ** 2)
 
-    c1, c2, c3 = 1., 0.1, 0.1
+    c1, c2, c3 = 0.01, 1., 0.1
     loss = c1 * loss_f + c2 * loss_y0 + c3 * loss_y_x_0
     return loss, (loss_f.item(), loss_y0.item(), loss_y_x_0.item())
 
 
 def learn(activation):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    print(device)
     model = PINN(layers, activation).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=4e-3)
@@ -105,4 +105,4 @@ if __name__ == '__main__':
     for activation in ['tanh', 'sigmoid', 'softplus', 'sin']:
         print(f"Обучение модели для функции активации {activation}:")
         learn(activation)
-        print(f"Обучение модели {activation} завершено.")
+        print(f"Обучение модели для функции активации {activation} завершено.")

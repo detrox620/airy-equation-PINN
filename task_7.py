@@ -38,10 +38,10 @@ class PINN(nn.Module):
         return x
 
 
-layers = [1, 150, 150, 150, 1]
+layers = [1, 100, 100, 100, 1]
 a = -5.0
 b = 3.0
-N_f = 15000
+N_f = 10000
 
 y_0 = 1. / (3. ** (2. / 3.) * gamma(2. / 3.))
 y_x_0 = -1. / (3. ** (1. / 3.) * gamma(1. / 3.))
@@ -71,7 +71,7 @@ def loss_function(model, x_f, x_i):
     loss_y0 = torch.mean((torch.squeeze(y_i) - y_0) ** 2)
     loss_y_x_0 = torch.mean((torch.squeeze(y_i_x) - y_x_0) ** 2)
 
-    c1, c2, c3 = 100., 1., 1.
+    c1, c2, c3 = 30., 1., 1.
     loss = c1 * loss_f + c2 * loss_y0 + c3 * loss_y_x_0
     return loss, (loss_f.item(), loss_y0.item(), loss_y_x_0.item())
 
@@ -92,7 +92,7 @@ def learn(activation):
     x_f = torch.linspace(a, b, N_f, device=device).view(-1, 1).requires_grad_(True)
     x_i = torch.tensor(0., device=device).view(-1, 1).requires_grad_(True)
 
-    num_epochs = 25000
+    num_epochs = 20000
 
     for epoch in range(num_epochs + 1):
         optimizer.zero_grad()
